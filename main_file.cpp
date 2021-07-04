@@ -138,21 +138,38 @@ void freeOpenGLProgram(GLFWwindow* window) {
 	//glDeleteTextures(1, &tex0);
 }
 
+glm::vec3 calcObserver(float angle_x, float angle_y)
+{
+	float camera_radius = 0.5f;
+	glm::vec4 observer = glm::vec4(0, 0, 0, 1);
+	glm::mat4 M = glm::mat4(1.0f);
+	M = glm::rotate(M, angle_y, glm::vec3(0, 0, 1));
+	M = glm::rotate(M, angle_x, glm::vec3(0, 1, 0));
+	M = glm::translate(M, glm::vec3(camera_radius, 0.0, 0.3f));
+	observer = M * observer;
+	return glm::vec3(observer);
+}
+
 void drawScene(GLFWwindow* window,float angle_x,float angle_y) {
 	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
-	
-	glm::mat4 M = glm::mat4(1.0f);
-	M = glm::rotate(M, angle_y, glm::vec3(0.0f, 1.0f, 0.0f));
-	M = glm::rotate(M, angle_x, glm::vec3(1.0f, 0.0f, 0.0f));
-	glm::mat4 V = glm::lookAt(glm::vec3(0.0f, -0.5f, -2.0f), glm::vec3(0.0f, 0.0f, 0.0f), glm::vec3(0.0f, 1.0f, 0.0f));
-	glm::mat4 P = glm::perspective(glm::radians(10.0f), 1.0f, 1.0f, 100.0f);
 
+	//glm::vec3 observer = glm::vec3(0.0f, -0.5f, 0.3f);
+	//cout << calcObserver(angle_x, angle_y).x  << " " << calcObserver(angle_x, angle_y).y  << " " << calcObserver(angle_x, angle_y).z << " anglex: " <<angle_x << " angley " << angle_y << endl;
+	glm::mat4 V = glm::lookAt(calcObserver(angle_x,angle_y), glm::vec3(0.0f, 0.0f, 0.0f), glm::vec3(0.0f, 0.0f, 1.0f));
+	glm::mat4 P = glm::perspective(glm::radians(85.0f), 1.0f, 0.1f, 10.0f);
+	glm::mat4 M = glm::mat4(1.0f);
+
+	//M = glm::rotate(M, angle_y, glm::vec3(0.0f, 1.0f, 0.0f));
+	//M = glm::rotate(M, angle_x, glm::vec3(1.0f, 0.0f, 0.0f));
+
+	// rysowanie modeli
 	spLambertTextured->use();
 	glUniformMatrix4fv(spLambertTextured->u("P"), 1, false, glm::value_ptr(P));
 	glUniformMatrix4fv(spLambertTextured->u("V"), 1, false, glm::value_ptr(V));
 
 	plansza0->draw(M, tex0);
 	plansza1->draw(M, tex1);
+	M = glm::translate(M, glm::vec3(0.0, 0.1, 0.1));
 	pionek->draw(M, tex0);
 
 	glfwSwapBuffers(window);
@@ -194,11 +211,12 @@ int main(void)
 	glfwSetTime(0); //Wyzeruj licznik czasu
 	while (!glfwWindowShouldClose(window)) //Tak długo jak okno nie powinno zostać zamknięte
 	{
-		angle_x += speed_x * glfwGetTime(); //Oblicz kąt o jaki obiekt obrócił się podczas poprzedniej klatki
-		angle_y += speed_y * glfwGetTime(); //Oblicz kąt o jaki obiekt obrócił się podczas poprzedniej klatki
-		glfwSetTime(0); //Wyzeruj licznik czasu
-		drawScene(window,angle_x,angle_y); //Wykonaj procedurę rysującą
-		glfwPollEvents(); //Wykonaj procedury callback w zalezności od zdarzeń jakie zaszły.
+		if(angle_x + speed_x * glfwGetTime() >= -0.8 && angle_x + speed_x * glfwGetTime() <= 0.35)
+			angle_x += speed_x * glfwGetTime();
+		angle_y += speed_y * glfwGetTime();
+		glfwSetTime(0);
+		drawScene(window,angle_x,angle_y);
+		glfwPollEvents();
 	}
 
 	freeOpenGLProgram(window);
