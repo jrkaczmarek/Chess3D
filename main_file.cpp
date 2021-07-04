@@ -45,7 +45,7 @@ using namespace std;
 float speed_x = 0;//[radiany/s]
 float speed_y = 0;//[radiany/s]
 
-GLuint tex;
+GLuint tex0;
 GLuint tex1;
 
 class my_model
@@ -64,6 +64,9 @@ public:
 		cout << importer.GetErrorString() << endl;
 
 		aiMesh* mesh = scene->mMeshes[nr_mesh];
+
+		for (int i = 0; i < scene->mNumMeshes; i++)
+			cout << "nazwa modelu nr " << i << " " << scene->mMeshes[i]->mName.C_Str() << endl;
 
 		for (int i = 0; i < mesh->mNumVertices; i++)
 		{
@@ -115,8 +118,8 @@ public:
 	}
 };
 
-my_model* plansza;
-my_model* pionek;
+my_model* plansza0;
+my_model* plansza1;
 
 GLuint readTexture(const char* filename) {
 	GLuint tex;
@@ -186,10 +189,10 @@ void initOpenGLProgram(GLFWwindow* window) {
 	glEnable(GL_DEPTH_TEST); //Włącz test głębokości na pikselach
 	glfwSetKeyCallback(window, key_callback);
 
-	tex = readTexture("board_DefaultMaterial_BaseColor.png");
-	tex1 = readTexture("Backside_pieces_Backside_pieces_BaseColor.png");
-	plansza = new my_model("szachy.fbx", 1);
-	pionek = new my_model("szachy.fbx", 0);
+	tex0 = readTexture("Chess_Wood_Base.png");
+	tex1 = readTexture("Chess_Wood_Dark_Base.png");
+	plansza0 = new my_model("3December2020_Day04_Chess.fbx", 65);
+	plansza1 = new my_model("3December2020_Day04_Chess.fbx", 64);
 }
 
 
@@ -199,7 +202,7 @@ void freeOpenGLProgram(GLFWwindow* window) {
     //************Tutaj umieszczaj kod, który należy wykonać po zakończeniu pętli głównej************
 
 	//Usunięcie tekstury z pamięci karty graficznej – w freeOpenGLProgram
-	glDeleteTextures(1, &tex);
+	//glDeleteTextures(1, &tex0);
 }
 
 void drawScene(GLFWwindow* window,float angle_x,float angle_y) {
@@ -208,16 +211,15 @@ void drawScene(GLFWwindow* window,float angle_x,float angle_y) {
 	glm::mat4 M = glm::mat4(1.0f);
 	M = glm::rotate(M, angle_y, glm::vec3(0.0f, 1.0f, 0.0f));
 	M = glm::rotate(M, angle_x, glm::vec3(1.0f, 0.0f, 0.0f));
-	glm::mat4 V = glm::lookAt(glm::vec3(0.0f, -5.0f, -3.0f), glm::vec3(0.0f, 0.0f, 0.0f), glm::vec3(0.0f, 1.0f, 0.0f));
-	glm::mat4 P = glm::perspective(glm::radians(100.0f), 1.0f, 1.0f, 1000.0f);
+	glm::mat4 V = glm::lookAt(glm::vec3(0.0f, -0.5f, -2.0f), glm::vec3(0.0f, 0.0f, 0.0f), glm::vec3(0.0f, 1.0f, 0.0f));
+	glm::mat4 P = glm::perspective(glm::radians(10.0f), 1.0f, 1.0f, 100.0f);
 
 	spLambertTextured->use();
 	glUniformMatrix4fv(spLambertTextured->u("P"), 1, false, glm::value_ptr(P));
 	glUniformMatrix4fv(spLambertTextured->u("V"), 1, false, glm::value_ptr(V));
 
-	plansza->draw(M, tex);
-	M = glm::translate(M, glm::vec3(0.0f, 0.0f, 0.3f));
-	pionek->draw(M, tex1);
+	plansza0->draw(M, tex0);
+	plansza1->draw(M, tex1);
 
 	glfwSwapBuffers(window);
 }
