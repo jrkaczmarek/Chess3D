@@ -40,8 +40,13 @@ Place, Fifth Floor, Boston, MA  02110 - 1301  USA
 #include <assimp/postprocess.h>
 #include <iostream>
 #include <string>
+#include <Parser.h>
+#include <Player.h>
+#include <Setting.h>
 
 using namespace std;
+
+typedef pair < pair <int, int >, pair <int, int >> movetype;
 
 float speed_x = 0;//[radiany/s]
 float speed_y = 0;//[radiany/s]
@@ -49,9 +54,12 @@ float speed_y = 0;//[radiany/s]
 GLuint tex0;
 GLuint tex1;
 
+Player white_player = Player("white", 54, 0, 5, 6, 28, 3);
+Player black_player = Player("black", 54, 0, 5, 6, 28, 3);
+Setting setting = Setting();
+
 my_model* plansza0;
 my_model* plansza1;
-my_model* pionek;
 
 GLuint readTexture(const char* filename) {
 	GLuint tex;
@@ -125,7 +133,10 @@ void initOpenGLProgram(GLFWwindow* window) {
 	tex1 = readTexture("Chess_Wood_Dark_Base.png");
 	plansza0 = new my_model("3December2020_Day04_Chess.fbx", 65);
 	plansza1 = new my_model("3December2020_Day04_Chess.fbx", 64);
-	pionek = new my_model("3December2020_Day04_Chess.fbx", 5);
+	
+	white_player.initialize("3December2020_Day04_Chess.fbx");
+	black_player.initialize("3December2020_Day04_Chess.fbx");
+	setting.initialize(black_player, white_player, 50);
 }
 
 
@@ -169,8 +180,10 @@ void drawScene(GLFWwindow* window,float angle_x,float angle_y) {
 
 	plansza0->draw(M, tex0);
 	plansza1->draw(M, tex1);
-	M = glm::translate(M, glm::vec3(0.0, 0.1, 0.1));
-	pionek->draw(M, tex0);
+
+	setting.draw_board(M, tex0, tex1);
+	setting.draw_captured(M, tex0, tex1);
+	setting.draw_move(M, tex0, tex1);
 
 	glfwSwapBuffers(window);
 }
@@ -204,6 +217,8 @@ int main(void)
 	}
 
 	initOpenGLProgram(window); //Operacje inicjujące
+	Parser parser("in.txt");
+	parser.parse_moves();
 
 	//Główna pętla
 	float angle_x = 0; //zadeklaruj zmienną przechowującą aktualny kąt obrotu
@@ -211,9 +226,18 @@ int main(void)
 	glfwSetTime(0); //Wyzeruj licznik czasu
 	while (!glfwWindowShouldClose(window)) //Tak długo jak okno nie powinno zostać zamknięte
 	{
+		if (setting.is_board_static()) {
+			movetype next_move = parser.next_move();
+			if (next_move != make_pair(make_pair(-1, -1), make_pair(-1, -1))) {
+				setting.next_move(next_move);
+			}
+		}
+
 		if(angle_x + speed_x * glfwGetTime() >= -0.8 && angle_x + speed_x * glfwGetTime() <= 0.35)
 			angle_x += speed_x * glfwGetTime();
+		
 		angle_y += speed_y * glfwGetTime();
+
 		glfwSetTime(0);
 		drawScene(window,angle_x,angle_y);
 		glfwPollEvents();
