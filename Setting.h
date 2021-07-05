@@ -196,7 +196,7 @@ public:
 				}
 				if (this->black_captured[i][j] != nullptr) {
 					glm::mat4 nM = glm::translate(M, glm::vec3(black_captured_coordinates[i][j].first, black_captured_coordinates[i][j].second, 0));
-					nM = glm::rotate(nM, 990 * PI / 180, glm::vec3(0, 0, 1));
+					nM = glm::rotate(nM, 90 * PI / 180, glm::vec3(0, 0, 1));
 					black_captured[i][j]->draw(nM, tex_light);
 				}
 				if (white_captured[i][j] == nullptr && black_captured[i][j] == nullptr) {

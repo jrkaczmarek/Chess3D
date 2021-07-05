@@ -125,7 +125,7 @@ void key_callback(
 void initOpenGLProgram(GLFWwindow* window) {
     initShaders();
 	//************Tutaj umieszczaj kod, który należy wykonać raz, na początku programu************
-	glClearColor(0.152, 0.298, 0.905, 1); //Ustaw kolor czyszczenia bufora kolorów
+	glClearColor(0, 0, 0, 1); //Ustaw kolor czyszczenia bufora kolorów
 	glEnable(GL_DEPTH_TEST); //Włącz test głębokości na pikselach
 	glfwSetKeyCallback(window, key_callback);
 
@@ -177,6 +177,8 @@ void drawScene(GLFWwindow* window,float angle_x,float angle_y) {
 	spLambertTextured->use();
 	glUniformMatrix4fv(spLambertTextured->u("P"), 1, false, glm::value_ptr(P));
 	glUniformMatrix4fv(spLambertTextured->u("V"), 1, false, glm::value_ptr(V));
+	glUniform4f(spLambertTextured->u("lp_1"), 3, 3, 6, 1);
+	glUniform4f(spLambertTextured->u("lp_2"), 3, -3, 6, 1);
 
 	plansza0->draw(M, tex0);
 	plansza1->draw(M, tex1);
