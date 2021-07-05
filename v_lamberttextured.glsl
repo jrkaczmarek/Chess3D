@@ -24,6 +24,8 @@ out vec4 l_2;
 out vec4 n_2;
 out vec4 v_2;
 
+out vec4 frag_position;
+
 void main(void) {
     l_1 = normalize(V*lp_1 - V*M*vertex);
     n_1 = normalize(V*M*normal);
@@ -33,6 +35,7 @@ void main(void) {
     n_2 = normalize(V*M*normal);
     v_2 = normalize(vec4(0,0,0,1) - V*M*vertex);
 
+    frag_position = M*vertex;
     gl_Position=P*V*M*vertex;
     i_tc=texCoord;
 }

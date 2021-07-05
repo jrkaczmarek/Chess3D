@@ -177,8 +177,8 @@ void drawScene(GLFWwindow* window,float angle_x,float angle_y) {
 	spLambertTextured->use();
 	glUniformMatrix4fv(spLambertTextured->u("P"), 1, false, glm::value_ptr(P));
 	glUniformMatrix4fv(spLambertTextured->u("V"), 1, false, glm::value_ptr(V));
-	glUniform4f(spLambertTextured->u("lp_1"), 3, 3, 6, 1);
-	glUniform4f(spLambertTextured->u("lp_2"), 3, -3, 6, 1);
+	glUniform4f(spLambertTextured->u("lp_1"), 0.2, -0.2, 0.2, 1);
+	glUniform4f(spLambertTextured->u("lp_2"), 0.2, 0.2, 0.2, 1);
 
 	plansza0->draw(M, tex0);
 	plansza1->draw(M, tex1);
