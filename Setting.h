@@ -29,6 +29,8 @@ private:
 	pair <int, int> FROM;
 	pair <int, int> TO;
 	pair <float, float> dir_vec;
+	float dir_vec_len;
+	float H, a, b, c;
 
 	void capture(my_model* figure) {
 		if (colors[figure] == "black") {
@@ -61,6 +63,7 @@ public:
 		this->is_moving = false;
 		this->accuracy = 0;
 		this->figure_to_move = nullptr;
+		this->H = 0.08;
 
 		pair <float, float> crd = make_pair(-0.21f, -0.21f);
 		for (int i = 0; i < 8; i++) {
@@ -213,8 +216,16 @@ public:
 
 		float nx = chessboard_coordinates[FROM.first][FROM.second].first + (dir_vec.first * step) / accuracy;
 		float ny = chessboard_coordinates[FROM.first][FROM.second].second + (dir_vec.second * step) / accuracy;
+		float nz = 0;
 
-		glm::mat4 nM = glm::translate(M, glm::vec3(nx, ny, 0));
+
+		nz = this->a * pow((float)step / accuracy * this->dir_vec_len, 2) + b * (float)step / accuracy * dir_vec_len + c;
+		cout << "X0 val = " << (float)step / accuracy * this->dir_vec_len << "\n";
+		cout << "NZ val = " << nz << "\n";
+
+		glm::mat4 nM = glm::translate(M, glm::vec3(nx, ny, nz));
+
+
 
 		if (colors[figure_to_move] == "white") {
 			nM = glm::rotate(nM, -90 * PI / 180, glm::vec3(0, 0, 1));
@@ -227,7 +238,7 @@ public:
 
 		if (step == accuracy) {
 			this->is_moving = false;
-			
+
 			if (chessboard[TO.first][TO.second] != nullptr) {
 				capture(chessboard[TO.first][TO.second]);
 			}
@@ -247,6 +258,18 @@ public:
 
 		this->dir_vec = make_pair(chessboard_coordinates[TO.first][TO.second].first - chessboard_coordinates[FROM.first][FROM.second].first, chessboard_coordinates[TO.first][TO.second].second - chessboard_coordinates[FROM.first][FROM.second].second);
 		this->step = 1;
+
+		this->dir_vec_len = sqrt(pow((this->dir_vec.first), 2) + pow((this->dir_vec.second), 2));
+		float x1 = 0;
+		float x2 = this->dir_vec_len;
+
+
+		this->a = this->H / ((float)x1 * x2 - (float)pow((x1 + x2), 2) / 4);
+		this->b = -a * (x1 + x2);
+		this->c = a * x1 * x2;
+
+		cout << "Function: " << this->a << " " << this->b << " " << this->c << "\n";
+
 	}
 
 	bool is_board_static() {
