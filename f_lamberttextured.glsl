@@ -1,6 +1,7 @@
 #version 330
 
 uniform sampler2D tex;
+uniform sampler2D tex_spec;
 uniform vec4 lp_1;
 uniform vec4 lp_2;
 
@@ -21,6 +22,7 @@ in vec4 frag_position;
 
 vec3 calc_point_light(vec4 l, vec4 n, vec4 v, vec4 lp) {
 	vec4 color=texture(tex,i_tc);
+	vec4 color_spec=texture(tex_spec,i_tc);
 
 	vec4 ml = normalize(l);
 	vec4 mn = normalize(n);
@@ -37,7 +39,7 @@ vec3 calc_point_light(vec4 l, vec4 n, vec4 v, vec4 lp) {
 
 	vec3 amb = 0.06f * color.rgb * attenuation;
 	vec3 diff = 0.7f * nl * color.rgb * attenuation;
-	vec3 spec = 1.0f * rv * color.rgb * attenuation;
+	vec3 spec = 1.0f * rv * color_spec.rgb * attenuation;
 
 	return amb + diff + spec;
 }

@@ -53,6 +53,7 @@ float speed_y = 0;//[radiany/s]
 
 GLuint tex0;
 GLuint tex1;
+GLuint tex_spec;
 
 Player white_player = Player("white", 54, 0, 5, 6, 28, 3);
 Player black_player = Player("black", 54, 0, 5, 6, 28, 3);
@@ -128,9 +129,10 @@ void initOpenGLProgram(GLFWwindow* window) {
 	glClearColor(0, 0, 0, 1); //Ustaw kolor czyszczenia bufora kolorów
 	glEnable(GL_DEPTH_TEST); //Włącz test głębokości na pikselach
 	glfwSetKeyCallback(window, key_callback);
-
+	//Chess_Wood_spec.png
 	tex0 = readTexture("Chess_Wood_Base.png");
 	tex1 = readTexture("Chess_Wood_Dark_Base.png");
+	tex_spec = readTexture("Chess_Wood_Roughtness.png");
 	plansza0 = new my_model("3December2020_Day04_Chess.fbx", 65);
 	plansza1 = new my_model("3December2020_Day04_Chess.fbx", 64);
 	
@@ -179,6 +181,9 @@ void drawScene(GLFWwindow* window,float angle_x,float angle_y) {
 	glUniformMatrix4fv(spLambertTextured->u("V"), 1, false, glm::value_ptr(V));
 	glUniform4f(spLambertTextured->u("lp_1"), 0.2, -0.2, 0.2, 1);
 	glUniform4f(spLambertTextured->u("lp_2"), 0.2, 0.2, 0.2, 1);
+	glActiveTexture(GL_TEXTURE1);
+	glBindTexture(GL_TEXTURE_2D, tex_spec);
+	glUniform1i(spLambertTextured->u("tex_spec"), 1);
 
 	plansza0->draw(M, tex0);
 	plansza1->draw(M, tex1);
