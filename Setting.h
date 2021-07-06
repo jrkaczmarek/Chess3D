@@ -7,7 +7,9 @@
 
 using namespace std;
 
-typedef pair < pair <int, int >, pair <int, int >> movetype;
+// typedef pair < pair <int, int >, pair <int, int >> movetype;
+typedef pair <char, vector <position> > movetype;
+typedef pair <int, int> position;
 
 class Setting {
 private:
@@ -25,10 +27,10 @@ private:
 	bool is_moving;
 	int accuracy;
 	int step;
-	my_model* figure_to_move;
-	pair <int, int> FROM;
-	pair <int, int> TO;
-	pair <float, float> dir_vec;
+	my_model* figure_to_move, * figure_to_move_2;
+	position FROM, FROM_2;
+	position TO, TO_2;
+	pair <float, float> dir_vec, dir_vec_2;
 	float dir_vec_len;
 	float H, a, b, c;
 
@@ -137,10 +139,10 @@ public:
 		this->chessboard[5][0] = P1.bishops[1];
 		colors[P1.bishops[1]] = "white";
 		figures[P1.bishops[1]] = "bishop";
-		this->chessboard[4][0] = P1.queen;
+		this->chessboard[3][0] = P1.queen;
 		colors[P1.queen] = "white";
 		figures[P1.queen] = "queen";
-		this->chessboard[3][0] = P1.king;
+		this->chessboard[4][0] = P1.king;
 		colors[P1.king] = "white";
 		figures[P1.king] = "king";
 
@@ -162,10 +164,10 @@ public:
 		this->chessboard[5][7] = P2.bishops[1];
 		colors[P2.bishops[1]] = "black";
 		figures[P2.bishops[1]] = "bishop";
-		this->chessboard[4][7] = P2.queen;
+		this->chessboard[3][7] = P2.queen;
 		colors[P2.queen] = "black";
 		figures[P2.queen] = "queen";
-		this->chessboard[3][7] = P2.king;
+		this->chessboard[4][7] = P2.king;
 		colors[P2.king] = "black";
 		figures[P2.king] = "king";
 	}
@@ -216,16 +218,9 @@ public:
 
 		float nx = chessboard_coordinates[FROM.first][FROM.second].first + (dir_vec.first * step) / accuracy;
 		float ny = chessboard_coordinates[FROM.first][FROM.second].second + (dir_vec.second * step) / accuracy;
-		float nz = 0;
-
-
-		nz = this->a * pow((float)step / accuracy * this->dir_vec_len, 2) + b * (float)step / accuracy * dir_vec_len + c;
-		cout << "X0 val = " << (float)step / accuracy * this->dir_vec_len << "\n";
-		cout << "NZ val = " << nz << "\n";
+		float nz = this->a * pow((float)step / accuracy * this->dir_vec_len, 2) + b * (float)step / accuracy * dir_vec_len + c;
 
 		glm::mat4 nM = glm::translate(M, glm::vec3(nx, ny, nz));
-
-
 
 		if (colors[figure_to_move] == "white") {
 			nM = glm::rotate(nM, -90 * PI / 180, glm::vec3(0, 0, 1));
@@ -236,6 +231,23 @@ public:
 			figure_to_move->draw(nM, tex_dark);
 		}
 
+		if (figure_to_move_2 != nullptr) {
+			nx = chessboard_coordinates[FROM_2.first][FROM_2.second].first + (dir_vec_2.first * step) / accuracy;
+			ny = chessboard_coordinates[FROM_2.first][FROM_2.second].second + (dir_vec_2.second * step) / accuracy;
+			nz = 0;
+
+			nM = glm::translate(M, glm::vec3(nx, ny, nz));
+
+			if (colors[figure_to_move_2] == "white") {
+				nM = glm::rotate(nM, -90 * PI / 180, glm::vec3(0, 0, 1));
+				figure_to_move_2->draw(nM, tex_light);
+			}
+			else if (colors[figure_to_move_2] == "black") {
+				nM = glm::rotate(nM, 90 * PI / 180, glm::vec3(0, 0, 1));
+				figure_to_move_2->draw(nM, tex_dark);
+			}
+		}
+
 		if (step == accuracy) {
 			this->is_moving = false;
 
@@ -244,6 +256,12 @@ public:
 			}
 
 			chessboard[TO.first][TO.second] = figure_to_move;
+			this->figure_to_move = nullptr;
+
+			if (this->figure_to_move_2 != nullptr) {
+				chessboard[TO_2.first][TO_2.second] = figure_to_move_2;
+				this->figure_to_move_2 = nullptr;
+			}
 		}
 
 		step += 1;
@@ -251,12 +269,25 @@ public:
 
 	void next_move(movetype move) {
 		this->is_moving = true;
-		this->FROM = move.first;
-		this->TO = move.second;
-		this->figure_to_move = chessboard[FROM.first][FROM.second];
-		this->chessboard[FROM.first][FROM.second] = nullptr;
 
-		this->dir_vec = make_pair(chessboard_coordinates[TO.first][TO.second].first - chessboard_coordinates[FROM.first][FROM.second].first, chessboard_coordinates[TO.first][TO.second].second - chessboard_coordinates[FROM.first][FROM.second].second);
+		char type = move.first;
+
+		if (type == 'M' || type == 'R') {
+			this->FROM = move.second[0];
+			this->TO = move.second[1];
+			this->figure_to_move = chessboard[FROM.first][FROM.second];
+			this->chessboard[FROM.first][FROM.second] = nullptr;
+			this->dir_vec = make_pair(chessboard_coordinates[TO.first][TO.second].first - chessboard_coordinates[FROM.first][FROM.second].first, chessboard_coordinates[TO.first][TO.second].second - chessboard_coordinates[FROM.first][FROM.second].second);
+		}
+
+		if (type == 'R') {
+			this->FROM_2 = move.second[2];
+			this->TO_2 = move.second[3];
+			this->figure_to_move_2 = chessboard[FROM_2.first][FROM_2.second];
+			this->chessboard[FROM_2.first][FROM_2.second] = nullptr;
+			this->dir_vec_2 = make_pair(chessboard_coordinates[TO_2.first][TO_2.second].first - chessboard_coordinates[FROM_2.first][FROM_2.second].first, chessboard_coordinates[TO_2.first][TO_2.second].second - chessboard_coordinates[FROM_2.first][FROM_2.second].second);
+		}
+
 		this->step = 1;
 
 		this->dir_vec_len = sqrt(pow((this->dir_vec.first), 2) + pow((this->dir_vec.second), 2));
@@ -279,23 +310,6 @@ public:
 		else {
 			return false;
 		}
-	}
-
-
-
-	void next_move2(movetype move) {
-		my_model* tmp;
-		pair <int, int> from = move.first;
-		pair <int, int> to = move.second;
-
-		if (this->chessboard[to.first][to.second] != nullptr) {
-			my_model* figure = this->chessboard[to.first][to.second];
-			this->capture(figure);
-		}
-
-		tmp = this->chessboard[from.first][from.second];
-		this->chessboard[from.first][from.second] = nullptr;
-		this->chessboard[to.first][to.second] = tmp;
 	}
 };
 

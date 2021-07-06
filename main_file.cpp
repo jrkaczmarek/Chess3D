@@ -46,7 +46,8 @@ Place, Fifth Floor, Boston, MA  02110 - 1301  USA
 
 using namespace std;
 
-typedef pair < pair <int, int >, pair <int, int >> movetype;
+// typedef pair < pair <int, int >, pair <int, int >> movetype;
+typedef pair <char, vector <position> > movetype;
 
 float speed_x = 0;//[radiany/s]
 float speed_y = 0;//[radiany/s]
@@ -185,8 +186,8 @@ void drawScene(GLFWwindow* window,float angle_x,float angle_y) {
 	glBindTexture(GL_TEXTURE_2D, tex_spec);
 	glUniform1i(spLambertTextured->u("tex_spec"), 1);
 
-	plansza0->draw(M, tex0);
-	plansza1->draw(M, tex1);
+	plansza0->draw(glm::rotate(M, 90 * PI / 180, glm::vec3(0, 0, 1)), tex0);
+	plansza1->draw(glm::rotate(M, 90 * PI / 180, glm::vec3(0, 0, 1)), tex1);
 
 	setting.draw_board(M, tex0, tex1);
 	setting.draw_captured(M, tex0, tex1);
@@ -235,7 +236,7 @@ int main(void)
 	{
 		if (setting.is_board_static()) {
 			movetype next_move = parser.next_move();
-			if (next_move != make_pair(make_pair(-1, -1), make_pair(-1, -1))) {
+			if (next_move.first != '0') {
 				setting.next_move(next_move);
 			}
 		}
