@@ -30,10 +30,8 @@ Place, Fifth Floor, Boston, MA  02110 - 1301  USA
 #include <stdlib.h>
 #include <stdio.h>
 #include "constants.h"
-#include "allmodels.h"
 #include "lodepng.h"
 #include "shaderprogram.h"
-#include "myCube.h"
 #include "my_model.h"
 #include <assimp/Importer.hpp>
 #include <assimp/scene.h>
@@ -138,7 +136,7 @@ void initOpenGLProgram(GLFWwindow* window) {
 	
 	white_player.initialize("3December2020_Day04_Chess.fbx");
 	black_player.initialize("3December2020_Day04_Chess.fbx");
-	setting.initialize(black_player, white_player, 200);
+	setting.initialize(black_player, white_player, 250);
 }
 
 
@@ -224,7 +222,7 @@ int main(void)
 	}
 
 	initOpenGLProgram(window); //Operacje inicjujące
-	Parser parser("Ananad vs Magnus.txt");
+	Parser parser("in.txt");
 	parser.parse_moves();
 
 	//Główna pętla
