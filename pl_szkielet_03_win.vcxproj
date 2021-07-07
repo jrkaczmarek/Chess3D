@@ -28,11 +28,15 @@
     <ClInclude Include="Player.h" />
     <ClInclude Include="Setting.h" />
     <ClInclude Include="shaderprogram.h" />
+    <ClInclude Include="Types.h" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="lodepng.cpp" />
     <ClCompile Include="main_file.cpp" />
+    <ClCompile Include="Parser.cpp" />
+    <ClCompile Include="Player.cpp" />
     <ClCompile Include="shaderprogram.cpp" />
+    <ClCompile Include="Setting.cpp" />
   </ItemGroup>
   <ItemGroup>
     <None Include="f_phong.glsl" />

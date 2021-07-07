@@ -133,7 +133,7 @@ void initOpenGLProgram(GLFWwindow* window) {
 	
 	white_player.initialize("models/Wooden_Chess.fbx");
 	black_player.initialize("models/Wooden_Chess.fbx");
-	setting.initialize(black_player, white_player, 250);
+	setting.initialize(black_player, white_player, 150);
 }
 
 
@@ -217,12 +217,12 @@ int main(void)
 	}
 
 	initOpenGLProgram(window); //Operacje inicjujące
-	Parser parser("games/example.txt");
+	Parser parser("games/Anand vs Carlsen.txt");
 	parser.parse_moves();
 
 	//Główna pętla
-	float angle_x = 0; //zadeklaruj zmienną przechowującą aktualny kąt obrotu
-	float angle_y = 0; //zadeklaruj zmienną przechowującą aktualny kąt obrotu
+	double angle_x = 0; //zadeklaruj zmienną przechowującą aktualny kąt obrotu
+	double angle_y = 0; //zadeklaruj zmienną przechowującą aktualny kąt obrotu
 	glfwSetTime(0); //Wyzeruj licznik czasu
 	while (!glfwWindowShouldClose(window)) //Tak długo jak okno nie powinno zostać zamknięte
 	{
