@@ -47,8 +47,8 @@ using namespace std;
 float speed_x = 0; //[radiany/s]
 float speed_y = 0; //[radiany/s]
 
-GLuint tex0;
-GLuint tex1;
+GLuint tex_light;
+GLuint tex_dark;
 GLuint tex_spec;
 GLuint tex_cloth;
 
@@ -122,20 +122,20 @@ void key_callback(
 //Procedura inicjująca
 void initOpenGLProgram(GLFWwindow* window) {
     initShaders();
-	//************Tutaj umieszczaj kod, który należy wykonać raz, na początku programu************
+	
 	glClearColor(0, 0., 0., 1); //Ustaw kolor czyszczenia bufora kolorów
 	glEnable(GL_DEPTH_TEST); //Włącz test głębokości na pikselach
 	glfwSetKeyCallback(window, key_callback);
-	//Chess_Wood_spec.png
-	tex0 = readTexture("Chess_Wood_Base.png");
-	tex1 = readTexture("Chess_Wood_Dark_Base.png");
-	tex_spec = readTexture("Chess_Wood_Roughtness.png");
-	tex_cloth = readTexture("Soft_Cloth_Base.png");
-	plansza0 = new my_model("3December2020_Day04_Chess.fbx", 65);
-	plansza1 = new my_model("3December2020_Day04_Chess.fbx", 64);
+
+	tex_light = readTexture("textures/Chess_Wood_Base.png");
+	tex_dark = readTexture("textures/Chess_Wood_Dark_Base.png");
+	tex_spec = readTexture("textures/Chess_Wood_Specular.png");
+	tex_cloth = readTexture("textures/Soft_Cloth_Base.png");
+	plansza0 = new my_model("models/Wooden_Chess.fbx", 65);
+	plansza1 = new my_model("models/Wooden_Chess.fbx", 64);
 	
-	white_player.initialize("3December2020_Day04_Chess.fbx");
-	black_player.initialize("3December2020_Day04_Chess.fbx");
+	white_player.initialize("models/Wooden_Chess.fbx");
+	black_player.initialize("models/Wooden_Chess.fbx");
 	setting.initialize(black_player, white_player, 250);
 }
 
@@ -143,10 +143,13 @@ void initOpenGLProgram(GLFWwindow* window) {
 //Zwolnienie zasobów zajętych przez program
 void freeOpenGLProgram(GLFWwindow* window) {
     freeShaders();
-    //************Tutaj umieszczaj kod, który należy wykonać po zakończeniu pętli głównej************
+    
 
 	//Usunięcie tekstury z pamięci karty graficznej – w freeOpenGLProgram
-	//glDeleteTextures(1, &tex0);
+	glDeleteTextures(1, &tex_light);
+	glDeleteTextures(1, &tex_dark);
+	glDeleteTextures(1, &tex_spec);
+	glDeleteTextures(1, &tex_cloth);
 }
 
 glm::vec3 calcObserver(float angle_x, float angle_y)
@@ -164,31 +167,26 @@ glm::vec3 calcObserver(float angle_x, float angle_y)
 void drawScene(GLFWwindow* window,float angle_x,float angle_y) {
 	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
-	//glm::vec3 observer = glm::vec3(0.0f, -0.5f, 0.3f);
-	//cout << calcObserver(angle_x, angle_y).x  << " " << calcObserver(angle_x, angle_y).y  << " " << calcObserver(angle_x, angle_y).z << " anglex: " <<angle_x << " angley " << angle_y << endl;
+	
 	glm::mat4 V = glm::lookAt(calcObserver(angle_x,angle_y), glm::vec3(0.0f, 0.0f, 0.0f), glm::vec3(0.0f, 0.0f, 1.0f));
 	glm::mat4 P = glm::perspective(glm::radians(85.0f), 1.0f, 0.1f, 10.0f);
 	glm::mat4 M = glm::mat4(1.0f);
 
-	//M = glm::rotate(M, angle_y, glm::vec3(0.0f, 1.0f, 0.0f));
-	//M = glm::rotate(M, angle_x, glm::vec3(1.0f, 0.0f, 0.0f));
-
 	// rysowanie modeli
-	spLambertTextured->use();
-	glUniformMatrix4fv(spLambertTextured->u("P"), 1, false, glm::value_ptr(P));
-	glUniformMatrix4fv(spLambertTextured->u("V"), 1, false, glm::value_ptr(V));
-	glUniform4f(spLambertTextured->u("lp_1"), 0.2, -0.2, 0.2, 1);
-	glUniform4f(spLambertTextured->u("lp_2"), 0.2, 0.2, 0.2, 1);
+	spPhong->use();
+	glUniformMatrix4fv(spPhong->u("P"), 1, false, glm::value_ptr(P));
+	glUniformMatrix4fv(spPhong->u("V"), 1, false, glm::value_ptr(V));
+	glUniform4f(spPhong->u("lp_1"), 0.2, -0.2, 0.2, 1);
+	glUniform4f(spPhong->u("lp_2"), 0.2, 0.2, 0.2, 1);
 	glActiveTexture(GL_TEXTURE1);
 	glBindTexture(GL_TEXTURE_2D, tex_spec);
-	glUniform1i(spLambertTextured->u("tex_spec"), 1);
+	glUniform1i(spPhong->u("tex_spec"), 1);
 
-	plansza0->draw(glm::rotate(M, 90 * PI / 180, glm::vec3(0, 0, 1)), tex0);
-	plansza1->draw(glm::rotate(M, 90 * PI / 180, glm::vec3(0, 0, 1)), tex1);
-
-	setting.draw_board(M, tex0, tex1);
-	setting.draw_captured(M, tex0, tex1);
-	setting.draw_move(M, tex0, tex1, tex_cloth);
+	plansza0->draw(glm::rotate(M, 90 * PI / 180, glm::vec3(0, 0, 1)), tex_light);
+	plansza1->draw(glm::rotate(M, 90 * PI / 180, glm::vec3(0, 0, 1)), tex_dark);
+	setting.draw_board(M, tex_light, tex_dark);
+	setting.draw_captured(M, tex_light, tex_dark);
+	setting.draw_move(M, tex_light, tex_dark, tex_cloth);
 
 	glfwSwapBuffers(window);
 }
@@ -204,7 +202,7 @@ int main(void)
 		exit(EXIT_FAILURE);
 	}
 
-	window = glfwCreateWindow(900, 900, "OpenGL", NULL, NULL);  //Utwórz okno 500x500 o tytule "OpenGL" i kontekst OpenGL.
+	window = glfwCreateWindow(900, 900, "Chess3D", NULL, NULL);  //Utwórz okno 900x900 o tytule "Chess3D" i kontekst OpenGL.
 
 	if (!window) //Jeżeli okna nie udało się utworzyć, to zamknij program
 	{
@@ -222,7 +220,7 @@ int main(void)
 	}
 
 	initOpenGLProgram(window); //Operacje inicjujące
-	Parser parser("in.txt");
+	Parser parser("games/example.txt");
 	parser.parse_moves();
 
 	//Główna pętla

@@ -19,17 +19,15 @@
     </ProjectConfiguration>
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="allmodels.h" />
     <ClInclude Include="constants.h" />
-    <ClInclude Include="cube.h" />
     <ClInclude Include="lodepng.h" />
-    <ClInclude Include="model.h" />
-    <ClInclude Include="myCube.h" />
-    <ClInclude Include="my_model.h" />
+    <ClInclude Include="my_model.h">
+      <DeploymentContent>true</DeploymentContent>
+    </ClInclude>
+    <ClInclude Include="Parser.h" />
+    <ClInclude Include="Player.h" />
+    <ClInclude Include="Setting.h" />
     <ClInclude Include="shaderprogram.h" />
-    <ClInclude Include="sphere.h" />
-    <ClInclude Include="teapot.h" />
-    <ClInclude Include="torus.h" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="lodepng.cpp" />
@@ -37,16 +35,8 @@
     <ClCompile Include="shaderprogram.cpp" />
   </ItemGroup>
   <ItemGroup>
-    <None Include="f_colored.glsl" />
-    <None Include="f_constant.glsl" />
-    <None Include="f_lambert.glsl" />
-    <None Include="f_lamberttextured.glsl" />
-    <None Include="f_textured.glsl" />
-    <None Include="v_colored.glsl" />
-    <None Include="v_constant.glsl" />
-    <None Include="v_lambert.glsl" />
-    <None Include="v_lamberttextured.glsl" />
-    <None Include="v_textured.glsl" />
+    <None Include="f_phong.glsl" />
+    <None Include="v_phong.glsl" />
   </ItemGroup>
   <PropertyGroup Label="Globals">
     <VCProjectVersion>16.0</VCProjectVersion>

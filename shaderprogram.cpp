@@ -19,15 +19,15 @@ Place, Fifth Floor, Boston, MA  02110 - 1301  USA
 
 #include "shaderprogram.h"
 
-ShaderProgram* spLambertTextured;
+ShaderProgram* spPhong;
 
 
 void initShaders() {
-	spLambertTextured = new ShaderProgram("v_lamberttextured.glsl", NULL, "f_lamberttextured.glsl");
+	spPhong = new ShaderProgram("v_phong.glsl", NULL, "f_phong.glsl");
 }
 
 void freeShaders() {
-	delete spLambertTextured;
+	delete spPhong;
 }
 
 //Procedura wczytuje plik do tablicy znaków.
