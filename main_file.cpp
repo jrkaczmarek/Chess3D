@@ -46,18 +46,16 @@ Place, Fifth Floor, Boston, MA  02110 - 1301  USA
 
 using namespace std;
 
-// typedef pair < pair <int, int >, pair <int, int >> movetype;
-typedef pair <char, vector <position> > movetype;
-
-float speed_x = 0;//[radiany/s]
-float speed_y = 0;//[radiany/s]
+float speed_x = 0; //[radiany/s]
+float speed_y = 0; //[radiany/s]
 
 GLuint tex0;
 GLuint tex1;
 GLuint tex_spec;
+GLuint tex_cloth;
 
-Player white_player = Player("white", 54, 0, 5, 6, 28, 3);
-Player black_player = Player("black", 54, 0, 5, 6, 28, 3);
+Player white_player = Player(white, 54, 0, 5, 6, 28, 3, 2);
+Player black_player = Player(black, 54, 0, 5, 6, 28, 3, 2);
 Setting setting = Setting();
 
 my_model* plansza0;
@@ -127,19 +125,20 @@ void key_callback(
 void initOpenGLProgram(GLFWwindow* window) {
     initShaders();
 	//************Tutaj umieszczaj kod, który należy wykonać raz, na początku programu************
-	glClearColor(0, 0, 0, 1); //Ustaw kolor czyszczenia bufora kolorów
+	glClearColor(0, 0., 0., 1); //Ustaw kolor czyszczenia bufora kolorów
 	glEnable(GL_DEPTH_TEST); //Włącz test głębokości na pikselach
 	glfwSetKeyCallback(window, key_callback);
 	//Chess_Wood_spec.png
 	tex0 = readTexture("Chess_Wood_Base.png");
 	tex1 = readTexture("Chess_Wood_Dark_Base.png");
 	tex_spec = readTexture("Chess_Wood_Roughtness.png");
+	tex_cloth = readTexture("Soft_Cloth_Base.png");
 	plansza0 = new my_model("3December2020_Day04_Chess.fbx", 65);
 	plansza1 = new my_model("3December2020_Day04_Chess.fbx", 64);
 	
 	white_player.initialize("3December2020_Day04_Chess.fbx");
 	black_player.initialize("3December2020_Day04_Chess.fbx");
-	setting.initialize(black_player, white_player, 50);
+	setting.initialize(black_player, white_player, 200);
 }
 
 
@@ -191,7 +190,7 @@ void drawScene(GLFWwindow* window,float angle_x,float angle_y) {
 
 	setting.draw_board(M, tex0, tex1);
 	setting.draw_captured(M, tex0, tex1);
-	setting.draw_move(M, tex0, tex1);
+	setting.draw_move(M, tex0, tex1, tex_cloth);
 
 	glfwSwapBuffers(window);
 }
@@ -225,7 +224,7 @@ int main(void)
 	}
 
 	initOpenGLProgram(window); //Operacje inicjujące
-	Parser parser("in.txt");
+	Parser parser("Ananad vs Magnus.txt");
 	parser.parse_moves();
 
 	//Główna pętla
@@ -236,7 +235,7 @@ int main(void)
 	{
 		if (setting.is_board_static()) {
 			movetype next_move = parser.next_move();
-			if (next_move.first != '0') {
+			if (next_move.first != still) {
 				setting.next_move(next_move);
 			}
 		}
