@@ -17,9 +17,6 @@ jeśli nie - napisz do Free Software Foundation, Inc., 59 Temple
 Place, Fifth Floor, Boston, MA  02110 - 1301  USA
 */
 
-// TESTOWY COMMIT 123 LALALAL TRALLALALALLA
-// testowy commint 2 LALALALA
-
 #define GLM_FORCE_RADIANS
 
 #include <GL/glew.h>

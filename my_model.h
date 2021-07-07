@@ -37,12 +37,14 @@ public:
 		//wgranie modelu
 		Assimp::Importer importer;
 		const aiScene* scene = importer.ReadFile(plik, aiProcess_Triangulate | aiProcess_FlipUVs | aiProcess_GenSmoothNormals | aiProcess_CalcTangentSpace);
-		cout << importer.GetErrorString() << endl;
+		// cout << importer.GetErrorString() << endl;
 
 		aiMesh* mesh = scene->mMeshes[nr_mesh];
 
+		/*
 		for (int i = 0; i < scene->mNumMeshes; i++)
 			cout << "nazwa modelu nr " << i << " " << scene->mMeshes[i]->mName.C_Str() << endl;
+		*/
 
 		for (int i = 0; i < mesh->mNumVertices; i++)
 		{
@@ -63,16 +65,20 @@ public:
 			}
 		}
 
+		/*
 		aiMaterial* material = scene->mMaterials[mesh->mMaterialIndex];
 		for (int i = 0; i < 19; i++) {
 			cout << i << " " << material->GetTextureCount((aiTextureType)i) << endl;
 		}
+		*/
 
+		/*
 		for (int i = 0; i < material->GetTextureCount(aiTextureType_DIFFUSE); i++) {
 			aiString str;
 			material->GetTexture(aiTextureType_DIFFUSE, i, &str);
 			cout << str.C_Str() << endl;
 		}
+		*/
 	}
 
 	void draw(glm::mat4 M, GLuint& tex)
