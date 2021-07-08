@@ -133,7 +133,7 @@ void initOpenGLProgram(GLFWwindow* window) {
 	
 	white_player.initialize("models/Wooden_Chess.fbx");
 	black_player.initialize("models/Wooden_Chess.fbx");
-	setting.initialize(black_player, white_player, 150);
+	setting.initialize(black_player, white_player, 70);
 }
 
 
